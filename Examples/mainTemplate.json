@@ -1,249 +1,232 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "vmName": {
-            "type": "string",
-            "metadata": {
-                "description": "Virtual machine name"
-            }
-        },
-        "trialOrProduction": {
-            "type": "string",
-            "allowedValues": [
-                "Trial",
-                "Production"
-            ],
-            "metadata": {
-                "description": "Select whether the VM should be in production or not."
-            }
-        },
-        "userName": {
-            "type": "string",
-            "defaultValue": "azureadmin",
-            "metadata": {
-                "description": "Username for the guest OS"
-            }
-        },
-        "pwd": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Application password"
-            }
-        },
-        "virtualNetworkName": {
-            "type": "string",
-            "defaultValue": "vnet1",
-            "metadata": {
-                "description": "Virtual network name"
-            }
-        },
-        "subnetName": {
-            "type": "string",
-            "defaultValue": "subnet1",
-            "metadata": {
-                "description": "Subnet name"
-            }
-        },
-        "vNetRgName": {
-            "type": "string",
-            "metadata": {
-                "description": "Virtual network resource group name"
-            }
-        },
-        "vNetAddressPrefix": {
-            "type": "string",
-            "defaultValue": "192.168.0.0/16",
-            "metadata": {
-                "description": "Virtual network address prefix"
-            }
-        },
-        "subnetAddressPrefix": {
-            "type": "string",
-            "metadata": {
-                "description": "Subnet address prefix"
-            }
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Deployment location"
+      }
     },
-    "variables": {
-        "diskSizes": [20, 30],
-        "productionvNetName": "[resourceId(parameters('vNetRgName'), 'Microsoft.Networks/virtualNetworks/', parameters('virtualNetworkName'))]",
-        "productionSubnetId": "[concat(variables('productionvNetName'), '/subnets/', parameters('subnetName'))]",
-        "vNetName": "trialvNet",
-        "sNetName": "trialSubnet",
-        "vnetID": "[resourceId('Microsoft.Network/virtualnetworks', variables('vNetName'))]",
-        "subnetRef": "[concat(variables('vNetId'),'/subnets/', variables('sNetName'))]",
-        "windowsOffer": "WindowsServer",
-        "windowsSku": "2016-Datacenter",
-        "windowsPublisher": "MicrosoftWindowsServer",
-        "availabilitySetName": "[concat(parameters('vmName'), '-', 'avset')]",
-        "availabilitySetId": {
-            "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
-        },
-        "vNicName": "[concat(parameters('vmName'), '-', 'nic')]",
-        "pNicName": "[concat(parameters('vmName'), '-', 'pip')]",
-        "copy": [
-            {
-                "name": "managedDiskId",
-                "count": "[length(variables('diskSizes'))]",
-                "input": {
-                    "lun": "[copyIndex('managedDiskId')]",
-                    "createOption": "Empty",
-                    "diskSizeGB": "[variables('diskSizes')[copyIndex('managedDiskId')]]"
-                }
-            }
-        ]
+    "windowsOSVersion": {
+      "type": "string",
+      "defaultValue": "2016-Datacenter",
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2016-Nano-Server",
+        "2016-Datacenter-with-Containers",
+        "2016-Datacenter",
+        "2019-Datacenter"
+      ],
+      "metadata": {
+        "description": "The Windows version for the VM. This will pick a fully patched image of this given Windows version."
+      }
     },
-    "resources": [
-        {
-            "condition": "[equals(parameters('trialOrProduction'), 'Trial')]",
-            "apiVersion": "2019-11-01",
-            "type": "Microsoft.Network/virtualNetworks",
-            "name": "[variables('vNetName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "addressSpace": {
-                    "addressPrefixes": [
-                        "[parameters('vNetAddressPrefix')]"
-                    ]
-                },
-                "subnets": [
-                    {
-                        "name": "[variables('sNetName')]",
-                        "properties": {
-                            "addressPrefix": "[parameters('subnetAddressPrefix')]"
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-11-01",
-            "name": "[variables('pNicName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "publicIPallocationmethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[toLower(parameters('vmName'))]"
-                }
-            }
-        },
-        {
-            "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2019-11-01",
-            "name": "[variables('vNicName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses/', variables('pNicName'))]",
-                "[resourceId('Microsoft.network/virtualNetworks/', variables('vNetName'))]"
-            ],
-            "properties": {
-                "ipConfigurations": [
-                    {
-                        "name": "ipconfig1",
-                        "properties": {
-                            "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('pNicName'))]"
-                            },
-                            "subnet": {
-                                "id": "[if(equals(parameters('trialOrProduction'), 'Production'), variables('productionSubnetId'), variables('subnetRef'))]"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('trialOrProduction'), 'Production')]",
-            "type": "Microsoft.Compute/availabilitySets",
-            "apiVersion": "2019-12-01",
-            "name": "[variables('availabilitySetName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "platformFaultDomainCount": 2,
-                "platformUpdateDomainCount": 3
-            },
-            "sku": {
-                "name": "Aligned"
-            }
-        },
-        {
-            "condition": "[equals(parameters('trialOrProduction'), 'Production')]",
-            "type": "Microsoft.Compute/disks",
-            "apiVersion": "2019-12-01",
-            "name": "[concat(parameters('vmName'), '-mdisk')]",
-            "location": "[resourceGroup().location]",
-            "sku": {
-                "name": "Premium_LRS"
-            },
-            "properties": {
-                "creationData": {
-                    "createOption": "Empty"
-                },
-                "diskSizeGB": 200
-            }
-        },
-        {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2019-12-01",
-            "name": "[parameters('vmName')]",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Network/networkinterfaces/', variables('vNicName'))]",
-                "[resourceId('Microsoft.Compute/availabilitySets/', variables('availabilitySetName'))]",
-                "[resourceId('Microsoft.Compute/disks', concat(parameters('vmName'), '-mDisk'))]"
-            ],
-            "properties": {
-                "availabilitySet": "[if(equals(parameters('trialOrProduction'), 'Production'), variables('availabilitySetId'), json('null'))]",
-                "hardwareprofile": {
-                    "vmsize": "[if(equals(parameters('trialOrProduction'), 'Production'), 'Standard_DS3_v2', 'Standard_DS1_v2')]"
-                },
-                "osProfile": {
-                    "computername": "[parameters('vmName')]",
-                    "adminusername": "[parameters('username')]",
-                    "adminpassword": "[parameters('pwd')]"
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "[variables('windowsPublisher')]",
-                        "offer": "[variables('windowsOffer')]",
-                        "version": "latest",
-                        "sku": "[variables('windowsSku')]"
-                    },
-                    "osdisk": {
-                        "name": "[concat(parameters('vmName'), '-osDisk')]",
-                        "createOption": "FromImage",
-                        "managedDisk": {
-                            "storageAccountType": "[if(equals(parameters('trialOrProduction'), 'Production'), 'Premium_LRS', 'Standard_LRS')]"
-                        },
-                        "caching": "ReadWrite"
-                    },
-                    "dataDisks": "[if(equals(parameters('trialOrProduction'), 'Production'), variables('managedDiskId'), json('null'))]"
-                },
-                "networkprofile": {
-                    "networkinterfaces": [
-                        {
-                            "id": "[resourceId('Microsoft.Network/networkinterfaces', variables('vNicName'))]"
-                        }
-                    ]
-                }
-            }
-        }
-    ],
-    "outputs": {
-        "connectionInfo": {
-            "type": "string",
-            "value": "Use RDP to connect to the VM endpoint"
-        },
-        "vmEndpoint": {
-            "type": "string",
-            "value": "[reference(concat(variables('pNicName'))).dnsSettings.fqdn]"
-        },        
-        "environment":{
-            "type": "string",
-            "value": "[if(equals(parameters('trialOrProduction'), 'Trial'), 'This is a trial', 'Production')]"
-        }
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "title": "VM Name",
+        "description": "This is the name of the your VM"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "testadmin",
+      "metadata": {
+        "description": "Username for the Virtual Machine."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Password for the Virtual Machine."
+      }
+    },
+    "virtualNetworkName": {
+      "type": "string",
+      "metadata": {
+        "description": "New or Existing VNet Name"
+      }
+    },
+    "virtualNetworkNewOrExisting": {
+      "type": "string",
+      "metadata": {
+        "description": "Boolean indicating whether the VNet is new or existing"
+      }
+    },
+    "virtualNetworkAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "VNet address prefix"
+      }
+    },
+    "virtualNetworkResourceGroup": {
+      "type": "string",
+      "metadata": {
+        "description": "Resource group of the VNet"
+      }
+    },
+    "virtualMachineSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the VM"
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "New or Existing subnet Name"
+      }
+    },
+    "subnetAddressPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet address prefix"
+      }
+    },
+    "baseUrl": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "artifactsBaseUrl": "",
+        "description": "URL to acquire other templates"
+      }
     }
+  },
+  "variables": {
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sawinvm')]",
+    "publicIPAddressName": "[concat(uniqueString(resourceGroup().id),'IP')]",
+    "vmName": "[parameters('vmName')]",
+    "nicName": "[concat(parameters('vmName'),'Nic')]",
+    "vnetId": {
+      "new": "[resourceId('Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]",
+      "existing": "[resourceId(parameters('virtualNetworkResourceGroup'),'Microsoft.Network/virtualNetworks',parameters('virtualNetworkName'))]"
+    },
+    "subnetId": "[concat(variables('vnetId')[parameters('virtualNetworkNewOrExisting')],'/subnets/',parameters('subnetName'))]",
+    "publicIPAddressType": "Dynamic"
+  },
+  "resources": [
+    {
+      "condition": "[equals(parameters('virtualNetworkNewOrExisting'),'new')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('virtualNetworkName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('virtualNetworkAddressPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[parameters('subnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetAddressPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('publicIPAddressName')]",
+      "apiVersion": "2021-02-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('nicName')]",
+      "apiVersion": "2021-02-01",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+              },
+              "subnet": {
+                "id": "[variables('subnetId')]"
+              }
+            }
+          }
+        ],
+        "enableIPForwarding": true
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('vmName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('virtualMachineSize')]"
+        },
+        "osProfile": {
+          "computerName": "[variables('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('windowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "diskSizeGB": 1023,
+              "lun": 0,
+              "createOption": "Empty"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+          }
+        }
+      }
+    }
+  ]
 }
