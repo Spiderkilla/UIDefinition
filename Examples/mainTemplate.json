@@ -82,14 +82,6 @@
       "metadata": {
         "description": "Subnet address prefix"
       }
-    },
-    "baseUrl": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "artifactsBaseUrl": "",
-        "description": "URL to acquire other templates"
-      }
     }
   },
   "variables": {
