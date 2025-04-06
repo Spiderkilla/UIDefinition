@@ -147,7 +147,7 @@
     "outputs": {
       "location": "[location()]",
       "vmName": "[steps('deploymentDetails').virtualMachine.vmName]",
-      "adminUsername": "[steps('deploymentDetails').virtualMachine.adminUsername]",
+      "adminUsername": "[steps('deploymentDetails').virtualMachine.adminUsername.adminUsername]",
       "adminPassword": "[steps('deploymentDetails').virtualMachine.vmPassword.password]",
       "virtualNetworkName": "[steps('deploymentDetails').vnet.name]",
       "virtualNetworkNewOrExisting": "[steps('deploymentDetails').vnet.newOrExisting]",
