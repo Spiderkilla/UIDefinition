@@ -155,6 +155,7 @@
     ],
     "outputs": {
       "location": "[location()]",
+      "windowsOSVersion": "[steps('deploymentDetails').windowsOSVersion]",
       "vmName": "[steps('deploymentDetails').virtualMachine.vmName]",
       "adminUsername": "[steps('deploymentDetails').virtualMachine.adminUsername.adminUsername]",
       "adminPassword": "[steps('deploymentDetails').virtualMachine.vmPassword.password]",
