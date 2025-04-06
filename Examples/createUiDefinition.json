@@ -58,7 +58,29 @@
                 },
                 "osPlatform": "Windows",
                 "visible": true
-              }
+              },
+              {
+                "name": "windowsOSVersion",
+                "type": "Microsoft.Common.DropDown",
+                "label": "Example drop down",
+                "placeholder": "",
+                "defaultValue": "Value two",
+                "toolTip": "",
+                "constraints": {
+                    "allowedValues": [
+                        {
+                            "label": "Value one",
+                            "value": "one"
+                        },
+                        {
+                            "label": "Value two",
+                            "value": "two"
+                        }
+                    ],
+                    "required": true
+                },
+                "visible": true
+            }
             ],
             "visible": true
           },
@@ -155,7 +177,7 @@
     ],
     "outputs": {
       "location": "[location()]",
-      "windowsOSVersion": "[steps('deploymentDetails').windowsOSVersion]",
+      "windowsOSVersion": "[steps('deploymentDetails').virtualMachine.windowsOSVersion]",
       "vmName": "[steps('deploymentDetails').virtualMachine.vmName]",
       "adminUsername": "[steps('deploymentDetails').virtualMachine.adminUsername.adminUsername]",
       "adminPassword": "[steps('deploymentDetails').virtualMachine.vmPassword.password]",
