@@ -97,8 +97,8 @@
             "label": "VM size",
             "toolTip": "The size of virtual machine for VM.",
             "recommendedSizes": [
-              "Standard_D2_v3",
-              "Standard_D2ads_v5"
+              "Standard_D2ads_v5",
+              "Standard_D2_v3"
             ],
             "osPlatform": "Windows",
             "imageReference": {
