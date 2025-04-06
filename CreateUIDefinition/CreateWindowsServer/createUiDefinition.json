@@ -82,7 +82,7 @@
               "subnets": "Subnets"
             },
             "defaultValue": {
-              "name": "vmx-vnet",
+              "name": "vm-vnet",
               "addressPrefixSize": "/16"
             },
             "constraints": {
@@ -92,7 +92,7 @@
               "subnet1": {
                 "label": "Subnet",
                 "defaultValue": {
-                  "name": "vmx-subnet",
+                  "name": "vm-subnet",
                   "addressPrefixSize": "/24"
                 },
                 "constraints": {
