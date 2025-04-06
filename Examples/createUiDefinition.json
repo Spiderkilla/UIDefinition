@@ -27,6 +27,17 @@
                 }
               },
               {
+                "name": "adminUsername",
+                "type": "Microsoft.Common.TextBox",
+                "label": "Admin Username",
+                "toolTip": "Enter the administrator username for the virtual machine.",
+                "constraints": {
+                  "required": true,
+                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,15}$",
+                  "validationMessage": "The username must be 3-16 characters long and can only contain letters, numbers, underscores, and hyphens."
+                }
+              },
+              {
                 "name": "vmPassword",
                 "type": "Microsoft.Compute.CredentialsCombo",
                 "label": {
