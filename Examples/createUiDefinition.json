@@ -3,16 +3,7 @@
   "version": "0.1.2-preview",
   "parameters": {
     "basics": [
-      {
-        "name": "location",
-        "type": "Microsoft.Common.Location",
-        "label": "Location",
-        "toolTip": "Select the location for the resources.",
-        "defaultValue": "[resourceGroup().location]",
-        "constraints": {
-          "required": true
-        }
-      }
+      {}
     ],
     "steps": [
       {
