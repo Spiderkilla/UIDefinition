@@ -143,8 +143,9 @@
             "name": "tagsByResource",
             "type": "Microsoft.Common.TagsByResource",
             "resources": [
-              "Microsoft.Storage/storageAccounts",
-              "Microsoft.Compute/virtualMachines"
+              "Microsoft.Compute/virtualMachines",
+              "Microsoft.Network/networkInterfaces",
+              "Microsoft.Network/publicIPAddresses"
             ]
           }
         ]
