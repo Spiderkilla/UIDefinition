@@ -12,9 +12,6 @@
       "type": "string",
       "defaultValue": "2016-Datacenter",
       "allowedValues": [
-        "2008-R2-SP1",
-        "2012-Datacenter",
-        "2012-R2-Datacenter",
         "2016-Nano-Server",
         "2016-Datacenter-with-Containers",
         "2016-Datacenter",
@@ -96,7 +93,6 @@
     }
   },
   "variables": {
-    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'sawinvm')]",
     "publicIPAddressName": "[concat(uniqueString(resourceGroup().id),'IP')]",
     "vmName": "[parameters('vmName')]",
     "nicName": "[concat(parameters('vmName'),'Nic')]",
@@ -167,23 +163,11 @@
       ]
     },
     {
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-04-01",
-      "name": "[variables('storageAccountName')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "Storage",
-      "properties": {}
-    },
-    {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-04-01",
       "name": "[variables('vmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
       "properties": {
@@ -222,8 +206,7 @@
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))).primaryEndpoints.blob]"
+            "enabled": true
           }
         }
       }
