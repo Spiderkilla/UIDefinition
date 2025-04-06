@@ -170,7 +170,7 @@
       }
     ],
     "outputs": {
-      "windowsOSVersion": "[basics('virtualMachine').windowsOSVersion.defaultValue]",
+      "windowsOSVersion": "[basics('virtualMachine').windowsOSVersion]",
       "vmName": "[basics('virtualMachine').vmName]",
       "adminUsername": "[basics('virtualMachine').adminUsername]",
       "adminPassword": "[basics('virtualMachine').vmPassword.password]",
