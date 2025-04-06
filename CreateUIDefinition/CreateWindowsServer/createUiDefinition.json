@@ -3,89 +3,74 @@
   "version": "0.1.2-preview",
   "parameters": {
     "basics": [
-      {}
-    ],
-    "steps": [
       {
-        "name": "deploymentDetails",
-        "label": "Deployment Details",
-        "subLabel": {
-          "preValidation": "Required",
-          "postValidation": "Done"
-        },
-        "bladeTitle": "Deployment Details",
+        "name": "virtualMachine",
+        "type": "Microsoft.Common.Section",
         "elements": [
           {
-            "name": "virtualMachine",
-            "type": "Microsoft.Common.Section",
-            "elements": [
-              {
-                "name": "vmName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "VM Name",
-                "toolTip": "Name of your virtual machine",
-                "constraints": {
-                  "required": true
+            "name": "vmName",
+            "type": "Microsoft.Common.TextBox",
+            "label": "VM Name",
+            "toolTip": "Name of your virtual machine",
+            "constraints": {
+              "required": true
+            }
+          },
+          {
+            "name": "adminUsername",
+            "type": "Microsoft.Common.TextBox",
+            "label": "Admin Username",
+            "toolTip": "Enter the administrator username for the virtual machine.",
+            "constraints": {
+              "required": true,
+              "regex": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,15}$",
+              "validationMessage": "The username must be 3-16 characters long and can only contain letters, numbers, underscores, and hyphens."
+            }
+          },
+          {
+            "name": "vmPassword",
+            "type": "Microsoft.Compute.CredentialsCombo",
+            "label": {
+              "password": "Password",
+              "confirmPassword": "Confirm password"
+            },
+            "toolTip": {
+              "password": ""
+            },
+            "constraints": {
+              "required": true,
+              "customValidationMessage": "The password must be alphanumeric, contain at least 12 characters, and have at least 1 letter and 1 number."
+            },
+            "options": {
+              "hideConfirmation": false
+            },
+            "osPlatform": "Windows",
+            "visible": true
+          },
+          {
+            "name": "windowsOSVersion",
+            "type": "Microsoft.Common.DropDown",
+            "label": "Windows OS Version",
+            "toolTip": "Select the Windows Server version for the VM. This will pick a fully patched image of the selected version.",
+            "placeholder": "Select a Windows Server version",
+            "defaultValue": "2019-Datacenter",
+            "constraints": {
+              "allowedValues": [
+                {
+                  "label": "Windows Server 2016 Datacenter",
+                  "value": "2016-Datacenter"
+                },
+                {
+                  "label": "Windows Server 2019 Datacenter",
+                  "value": "2019-Datacenter"
+                },
+                {
+                  "label": "Windows Server 2022 Datacenter",
+                  "value": "2022-Datacenter"
                 }
-              },
-              {
-                "name": "adminUsername",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Admin Username",
-                "toolTip": "Enter the administrator username for the virtual machine.",
-                "constraints": {
-                  "required": true,
-                  "regex": "^[a-zA-Z0-9][a-zA-Z0-9_-]{2,15}$",
-                  "validationMessage": "The username must be 3-16 characters long and can only contain letters, numbers, underscores, and hyphens."
-                }
-              },
-              {
-                "name": "vmPassword",
-                "type": "Microsoft.Compute.CredentialsCombo",
-                "label": {
-                  "password": "Password",
-                  "confirmPassword": "Confirm password"
-                },
-                "toolTip": {
-                  "password": ""
-                },
-                "constraints": {
-                  "required": true,
-                  "customValidationMessage": "The password must be alphanumeric, contain at least 12 characters, and have at least 1 letter and 1 number."
-                },
-                "options": {
-                  "hideConfirmation": false
-                },
-                "osPlatform": "Windows",
-                "visible": true
-              },
-              {
-                "name": "windowsOSVersion",
-                "type": "Microsoft.Common.DropDown",
-                "label": "Windows OS Version",
-                "toolTip": "Select the Windows Server version for the VM. This will pick a fully patched image of the selected version.",
-                "placeholder": "Select a Windows Server version",
-                "defaultValue": "2019-Datacenter",
-                "constraints": {
-                  "allowedValues": [
-                    {
-                      "label": "Windows Server 2016 Datacenter",
-                      "value": "2016-Datacenter"
-                    },
-                    {
-                      "label": "Windows Server 2019 Datacenter",
-                      "value": "2019-Datacenter"
-                    },
-                    {
-                      "label": "Windows Server 2022 Datacenter",
-                      "value": "2022-Datacenter"
-                    }
-                  ],
-                  "required": true
-                },
-                "visible": true
-              }
-            ],
+              ],
+              "required": true
+            },
             "visible": true
           },
           {
@@ -133,8 +118,11 @@
               "sku": "2016-Datacenter"
             }
           }
-        ]
-      },
+        ],
+        "visible": true
+      }
+    ],
+    "steps": [
       {
         "name": "identityDetails",
         "label": "Managed Identity Details",
@@ -181,17 +169,17 @@
     ],
     "outputs": {
       "location": "[location()]",
-      "windowsOSVersion": "[steps('deploymentDetails').virtualMachine.windowsOSVersion]",
-      "vmName": "[steps('deploymentDetails').virtualMachine.vmName]",
-      "adminUsername": "[steps('deploymentDetails').virtualMachine.adminUsername.adminUsername]",
-      "adminPassword": "[steps('deploymentDetails').virtualMachine.vmPassword.password]",
-      "virtualNetworkName": "[steps('deploymentDetails').vnet.name]",
-      "virtualNetworkNewOrExisting": "[steps('deploymentDetails').vnet.newOrExisting]",
-      "virtualNetworkAddressPrefix": "[first(steps('deploymentDetails').vnet.addressPrefixes)]",
-      "virtualNetworkResourceGroup": "[steps('deploymentDetails').vnet.resourceGroup]",
-      "virtualMachineSize": "[steps('deploymentDetails').VMSize]",
-      "subnetName": "[steps('deploymentDetails').vnet.subnets.subnet1.name]",
-      "subnetAddressPrefix": "[steps('deploymentDetails').vnet.subnets.subnet1.addressPrefix]",
+      "windowsOSVersion": "[basics('virtualMachine').windowsOSVersion]",
+      "vmName": "[basics('virtualMachine').vmName]",
+      "adminUsername": "[basics('virtualMachine').adminUsername.adminUsername]",
+      "adminPassword": "[basics('virtualMachine').vmPassword.password]",
+      "virtualNetworkName": "[basics('virtualMachine').vnet.name]",
+      "virtualNetworkNewOrExisting": "[basics('virtualMachine').vnet.newOrExisting]",
+      "virtualNetworkAddressPrefix": "[first(basics('virtualMachine').vnet.addressPrefixes)]",
+      "virtualNetworkResourceGroup": "[basics('virtualMachine').vnet.resourceGroup]",
+      "virtualMachineSize": "[basics('virtualMachine').VMSize]",
+      "subnetName": "[basics('virtualMachine').vnet.subnets.subnet1.name]",
+      "subnetAddressPrefix": "[basics('virtualMachine').vnet.subnets.subnet1.addressPrefix]",
       "managedIdentity": "[steps('identityDetails').identity]",
       "tagsByResource": "[steps('tags').tagsByResource]"
     }
