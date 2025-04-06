@@ -182,11 +182,6 @@
             "createOption": "FromImage"
           },
           "dataDisks": [
-            {
-              "diskSizeGB": 1023,
-              "lun": 0,
-              "createOption": "Empty"
-            }
           ]
         },
         "networkProfile": {
