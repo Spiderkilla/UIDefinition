@@ -134,6 +134,20 @@
             "visible": true
           }
         ]
+      },
+      {
+        "name": "tags",
+        "label": "Tags",
+        "elements": [
+          {
+            "name": "tagsByResource",
+            "type": "Microsoft.Common.TagsByResource",
+            "resources": [
+              "Microsoft.Storage/storageAccounts",
+              "Microsoft.Compute/virtualMachines"
+            ]
+          }
+        ]
       }
     ],
     "outputs": {
@@ -148,7 +162,8 @@
       "virtualMachineSize": "[steps('deploymentDetails').VMSize]",
       "subnetName": "[steps('deploymentDetails').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[steps('deploymentDetails').vnet.subnets.subnet1.addressPrefix]",
-      "managedIdentity": "[steps('identityDetails').identity]"
+      "managedIdentity": "[steps('identityDetails').identity]",
+      "tagsByResource": "[steps('tags').tagsByResource]"
     }
   }
 }
