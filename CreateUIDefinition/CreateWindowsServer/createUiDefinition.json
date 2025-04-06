@@ -172,7 +172,7 @@
     "outputs": {
       "windowsOSVersion": "[basics('virtualMachine').windowsOSVersion]",
       "vmName": "[basics('virtualMachine').vmName]",
-      "adminUsername": "[basics('virtualMachine').adminUsername.adminUsername]",
+      "adminUsername": "[basics('virtualMachine').adminUsername]",
       "adminPassword": "[basics('virtualMachine').vmPassword.password]",
       "virtualNetworkName": "[basics('virtualMachine').vnet.name]",
       "virtualNetworkNewOrExisting": "[basics('virtualMachine').vnet.newOrExisting]",
