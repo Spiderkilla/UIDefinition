@@ -12,6 +12,7 @@
             "type": "Microsoft.Common.TextBox",
             "label": "VM Name",
             "toolTip": "Name of your virtual machine",
+            "defaultValue": "MyVirtualMachine",
             "constraints": {
               "required": true
             }
