@@ -169,7 +169,6 @@
       }
     ],
     "outputs": {
-      "location": "[location()]",
       "windowsOSVersion": "[basics('virtualMachine').windowsOSVersion]",
       "vmName": "[basics('virtualMachine').vmName]",
       "adminUsername": "[basics('virtualMachine').adminUsername.adminUsername]",
@@ -182,7 +181,8 @@
       "subnetName": "[basics('virtualMachine').vnet.subnets.subnet1.name]",
       "subnetAddressPrefix": "[basics('virtualMachine').vnet.subnets.subnet1.addressPrefix]",
       "managedIdentity": "[steps('identityDetails').identity]",
-      "tagsByResource": "[steps('tags').tagsByResource]"
+      "tagsByResource": "[steps('tags').tagsByResource]",
+      "location": "[location()]"
     }
   }
 }
