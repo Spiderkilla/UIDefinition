@@ -62,25 +62,29 @@
               {
                 "name": "windowsOSVersion",
                 "type": "Microsoft.Common.DropDown",
-                "label": "windowsOSVersion",
-                "toolTip": "The Windows version for the VM. This will pick a fully patched image of this given Windows version.",
-                "placeholder": "",
-                "defaultValue": "Value two",
+                "label": "Windows OS Version",
+                "toolTip": "Select the Windows Server version for the VM. This will pick a fully patched image of the selected version.",
+                "placeholder": "Select a Windows Server version",
+                "defaultValue": "2019-Datacenter",
                 "constraints": {
-                    "allowedValues": [
-                        {
-                            "label": "Value one",
-                            "value": "one"
-                        },
-                        {
-                            "label": "Value two",
-                            "value": "two"
-                        }
-                    ],
-                    "required": true
+                  "allowedValues": [
+                    {
+                      "label": "Windows Server 2016 Datacenter",
+                      "value": "2016-Datacenter"
+                    },
+                    {
+                      "label": "Windows Server 2019 Datacenter",
+                      "value": "2019-Datacenter"
+                    },
+                    {
+                      "label": "Windows Server 2022 Datacenter",
+                      "value": "2022-Datacenter"
+                    }
+                  ],
+                  "required": true
                 },
                 "visible": true
-            }
+              }
             ],
             "visible": true
           },
