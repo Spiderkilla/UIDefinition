@@ -15,7 +15,12 @@
             "defaultValue": "MyVM",
             "constraints": {
               "required": true,
-              "maxLength": 15
+              "validations": [
+                {
+                  "regex": "^[a-z0-9A-Z]{1,15}$",
+                  "message": "Only alphanumeric characters are allowed, and the value must be 1-15 characters long."
+                }
+              ]
             }
           },
           {
