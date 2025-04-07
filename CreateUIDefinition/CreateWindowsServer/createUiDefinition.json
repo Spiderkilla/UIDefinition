@@ -55,7 +55,7 @@
             "label": "Windows OS Version",
             "toolTip": "Select the Windows Server version for the VM. This will pick a fully patched image of the selected version.",
             "placeholder": "Select a Windows Server version",
-            "defaultValue": "2019-Datacenter",
+            "defaultValue": ["Windows Server 2019 Datacenter"],
             "constraints": {
               "allowedValues": [
                 {
