@@ -81,7 +81,12 @@
       "metadata": {
         "description": "Subnet address prefix"
       }
+    },
+    "tagsByResource": {
+      "type": "object",
+      "defaultValue": {}
     }
+
   },
   "variables": {
     "publicIPAddressName": "[concat(uniqueString(resourceGroup().id),'IP')]",
@@ -122,6 +127,8 @@
       "name": "[variables('publicIPAddressName')]",
       "apiVersion": "2021-02-01",
       "location": "[parameters('location')]",
+      "tags": "[ if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], json('{}')) ]",
+
       "properties": {
         "publicIPAllocationMethod": "[variables('publicIPAddressType')]"
       }
@@ -131,6 +138,8 @@
       "name": "[variables('nicName')]",
       "apiVersion": "2021-02-01",
       "location": "[parameters('location')]",
+      "tags": "[ if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], json('{}')) ]",
+
       "properties": {
         "ipConfigurations": [
           {
@@ -158,6 +167,7 @@
       "apiVersion": "2021-04-01",
       "name": "[variables('vmName')]",
       "location": "[parameters('location')]",
+      "tags": "[ if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], json('{}')) ]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
       ],
